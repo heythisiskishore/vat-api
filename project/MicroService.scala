@@ -20,6 +20,11 @@ trait MicroService {
 
   lazy val FuncTest = config("func") extend Test
 
+  lazy val generate = taskKey[Unit]("Generate my file")
+
+  fullRunTask(generate, Compile, "my.App")
+  generate := (runMain in Compile).toTask(" uk/gov/hmrc/vatapi/featureswitch/RamlFeatureSwitchImpl").value
+
   lazy val scoverageSettings: Seq[Def.Setting[_]] = {
 
     Seq(

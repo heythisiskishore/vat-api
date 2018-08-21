@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.vatapi.controllers.definition
+package uk.gov.hmrc.vatapi
 
-import play.api.http.LazyHttpErrorHandler
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import uk.gov.hmrc.vatapi.controllers.definition.JsonFormatters._
+import scala.util.Try
 
-
-abstract class DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController(LazyHttpErrorHandler) {
-
-  override def definition() = Action {
-    Ok(Json.toJson(VatApiDefinition.definition))
+package object featureswitch {
+  implicit class ListOps[T](xs: List[T]) {
+    def dropIndex(n: Int): List[T] = {
+      val (l1, l2) = xs splitAt n
+      l1 ::: (l2 drop 1)
+    }
   }
 
-  override def conf(version: String, file: String) = {
-    super.at(s"/public/api/conf/$version", file)
+  implicit class StringOps(s: String){
+    def isBoolean: Boolean = Try(s.toLowerCase.toBoolean).isSuccess
+    def dropLeadingSpaces: String = s.dropWhile(_ == ' ')
   }
 }
-
-object DocumentationController extends DocumentationController

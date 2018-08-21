@@ -16,21 +16,22 @@
 
 package uk.gov.hmrc.vatapi.mocks
 
-import org.mockito.{ArgumentMatchers => Matchers}
-import org.mockito.Mockito
+import com.typesafe.config.Config
 import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfterEach, Suite}
+import org.scalatest.Suite
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 
-trait Mock extends MockitoSugar with BeforeAndAfterEach { _: Suite =>
+trait MockServicesConfig extends Mock { _: Suite =>
 
-  def any[T]() = Matchers.any[T]()
-  def eqTo[T](t: T) = Matchers.eq[T](t)
-  def when[T](t: T) = Mockito.when(t)
-  def reset[T](t: T) = Mockito.reset(t)
+  val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
+  val mockConfig: Config = mock[Config]
 
-  implicit class stubbingOps[T](stubbing: OngoingStubbing[T]){
-    def returns(t: T) = stubbing.thenReturn(t)
-    def throws[A <: Throwable](t: A): OngoingStubbing[T] = stubbing.thenThrow(t)
+  object MockedServicesConfig {
+    def getBoolean(key: String): OngoingStubbing[Boolean] = when(mockServicesConfig.getBoolean(eqTo(key)))
+  }
+
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockServicesConfig)
   }
 }

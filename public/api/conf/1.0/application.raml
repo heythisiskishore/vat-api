@@ -58,7 +58,12 @@ traits:
   /{vrn}:
     uriParameters:
       vrn:
+        #!START(FEATURE=test,FLAG=true)
+        description: some ting
+        #!STOP(FEATURE=test,FLAG=true)
+        #!START(FEATURE=test,FLAG=false)
         description: VAT registration number.
+        #!STOP(FEATURE=test,FLAG=false)
         type: string
         example: "123456789"
     /obligations:
