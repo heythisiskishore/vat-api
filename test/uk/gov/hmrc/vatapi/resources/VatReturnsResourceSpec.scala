@@ -84,6 +84,7 @@ class VatReturnsResourceSpec extends ResourceSpec
           .returns(Future.successful(Right(vatReturnResponse)))
 
         val request = FakeRequest().withBody[JsValue](vatReturnDeclarationJson)
+          .withHeaders(("Gov-Client-Colour-Depth", "00"), ("Gov-Client-Public-Port", "8080"))
         val result = resource.submitVatReturn(vrn)(request)
 
         status(result) shouldBe CREATED

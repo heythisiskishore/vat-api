@@ -53,7 +53,8 @@ private object AppDependencies {
     "com.typesafe.play" %% "play-json-joda" % jsonJodaVersion,
     "org.typelevel" %% "cats-core" % catsCoreVersion,
     "org.json4s" %% "json4s-native" % json4SnativeVersion,
-    "org.json4s" %% "json4s-ext" % json4SextVersion
+    "org.json4s" %% "json4s-ext" % json4SextVersion,
+    "uk.gov.hmrc" %% "fraud-prevention" % "0.5.0"
   )
 
   trait TestDependencies {

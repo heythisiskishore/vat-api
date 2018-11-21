@@ -21,6 +21,8 @@ import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc.{ActionBuilder, _}
 import uk.gov.hmrc.domain.Vrn
+import uk.gov.hmrc.fraudprevention.AntiFraudHeadersValidatorActionFilter
+import uk.gov.hmrc.fraudprevention.headervalidators.impl.{GovClientColourDepthHeaderValidator, GovClientPublicPortHeaderValidator}
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.vatapi.auth.{Agent, AuthContext, Organisation}
 import uk.gov.hmrc.vatapi.config.{AppContext, FeatureSwitch}
@@ -36,6 +38,10 @@ trait BaseResource extends BaseController {
   val logger: Logger = Logger(this.getClass)
 
   lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch)
+
+  lazy private val requiredHeaderValidators = List(GovClientColourDepthHeaderValidator, GovClientPublicPortHeaderValidator)
+
+  lazy private val fraudPreventionFilter = AntiFraudHeadersValidatorActionFilter.actionFilterFromHeaderValidators(requiredHeaderValidators)
 
   def AuthAction(vrn: Vrn) = new ActionRefiner[Request, AuthRequest] {
     logger.debug(s"[BaseResource][AuthAction] Check MTD VAT authorisation for the VRN : $vrn")
@@ -65,22 +71,14 @@ trait BaseResource extends BaseController {
         Future.successful(Right(new AuthRequest(Organisation(), request)))
   }
 
-  def APIAction(vrn: Vrn, nrsRequired: Boolean = false): ActionBuilder[AuthRequest] = if (nrsRequired) {
-    new ActionBuilder[Request] with ActionFilter[Request] {
-      override protected def filter[A](request: Request[A]): Future[Option[Result]] =
-        Future {
-          None
-        }
-    } andThen AuthActionWithNrsRequirement(vrn)
-  } else {
-    new ActionBuilder[Request] with ActionFilter[Request] {
-      override protected def filter[A](request: Request[A]): Future[Option[Result]] =
-        Future {
-          None
-        }
-    } andThen AuthAction(vrn)
+  def APIAction(vrn: Vrn, nrsRequired: Boolean = false): ActionBuilder[AuthRequest] = {
+    (featureSwitch.isHeaderValidationEnabled, nrsRequired) match {
+      case (true, true) => fraudPreventionFilter andThen AuthActionWithNrsRequirement(vrn)
+      case (true, false) => fraudPreventionFilter andThen AuthAction(vrn)
+      case (false, true) => Action andThen AuthActionWithNrsRequirement(vrn)
+      case (false, false) => Action andThen AuthAction(vrn)
+    }
   }
-
 
   def getRequestDateTimestamp(implicit request: AuthRequest[_]): String = {
     val requestTimestampHeader = "X-Request-Timestamp"

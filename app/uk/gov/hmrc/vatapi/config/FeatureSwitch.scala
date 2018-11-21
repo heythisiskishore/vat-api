@@ -50,5 +50,12 @@ case class FeatureSwitch(value: Option[Configuration]) {
       case None => true
     }
   }
+
+  def isHeaderValidationEnabled: Boolean =  value match {
+    case Some(config) => config.getBoolean("header-validation.enabled")
+                            .getOrElse(throw new RuntimeException("feature-switch.header-validation is not configured"))
+    case None => false
+  }
+
 }
 

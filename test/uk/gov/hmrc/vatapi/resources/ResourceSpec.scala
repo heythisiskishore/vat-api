@@ -42,8 +42,8 @@ trait ResourceSpec extends WordSpec
 
   val mockAppContext = mock[AppContext]
 
-  def mockAuthAction(vrn: Vrn, authEnabled: Boolean = false) = {
-    val config = Configuration("auth.enabled" -> authEnabled)
+  def mockAuthAction(vrn: Vrn, authEnabled: Boolean = false, headerValidator: Boolean = false) = {
+    val config = Configuration("auth.enabled" -> authEnabled, "header-validation.enabled" -> headerValidator)
     when(mockAppContext.featureSwitch)
       .thenReturn(Some(config))
   }
