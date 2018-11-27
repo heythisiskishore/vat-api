@@ -58,9 +58,6 @@ trait BaseConnector {
   def withTestHeader: HeaderCarrier => HeaderCarrier = { hc =>
     val newHc: HeaderCarrier = hc
       .copy()
-      .withExtraHeaders(
-        "Accept" -> "application/json"
-      )
 
     // HACK: http-verbs removes all "otherHeaders" from HeaderCarrier on outgoing requests.
     //       We want to preserve the Gov-Test-Scenario header, so we copy it into "extraHeaders".
