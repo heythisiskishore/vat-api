@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.vatapi.auth
+package uk.gov.hmrc.vatapi.config.locator
 
+import javax.inject.{Inject, Singleton}
+import play.api.Logger
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.vatapi.config.AppContext
 
-//object APIAuthorisedFunctions extends APIAuthorisedFunctions
-//
-//trait APIAuthorisedFunctions extends AuthorisedFunctions {
-//  override def authConnector: AuthConnector = MicroserviceAuthConnector
-//}
+@Singleton
+class ServiceLocatorRegistration @Inject()(config: AppContext,
+                                           serviceLocatorConnector: ServiceLocatorConnector) {
 
-
+  if (config.registrationEnabled) {
+    serviceLocatorConnector.register(HeaderCarrier())
+  } else {
+    Logger.warn("Registration in Service Locator is disabled")
+  }
+}

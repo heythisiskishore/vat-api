@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.vatapi.audit
 
+import com.google.inject.Inject
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
@@ -24,15 +25,14 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import uk.gov.hmrc.vatapi.config.MicroserviceAuditConnector
 import uk.gov.hmrc.vatapi.resources.BusinessResult
 
 import scala.concurrent.ExecutionContext
 
-trait AuditService {
+class AuditService @Inject()(connector: AuditConnector){
 
   val logger: Logger = Logger(this.getClass)
-  private val auditConnector: AuditConnector = MicroserviceAuditConnector
+  private val auditConnector: AuditConnector = connector
 
   def audit[T](event: AuditEvent[T])(
     implicit hc: HeaderCarrier,
@@ -58,4 +58,4 @@ trait AuditService {
 
 }
 
-object AuditService extends AuditService
+//object AuditService extends AuditService

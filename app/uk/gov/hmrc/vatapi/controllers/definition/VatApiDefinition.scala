@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.vatapi.controllers.definition
 
+import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.vatapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.vatapi.controllers.definition.APIStatus.APIStatus
@@ -24,7 +25,7 @@ import uk.gov.hmrc.vatapi.controllers.definition.GroupName._
 import uk.gov.hmrc.vatapi.controllers.definition.HttpMethod._
 import uk.gov.hmrc.vatapi.controllers.definition.ResourceThrottlingTier._
 
-class VatApiDefinition {
+class VatApiDefinition @Inject()(appContext: AppContext){
 
   val logger: Logger = Logger(this.getClass)
 
@@ -101,7 +102,7 @@ class VatApiDefinition {
         name = "VAT (MTD)",
         description =
           "An API for providing VAT data",
-        context = AppContext.apiGatewayRegistrationContext,
+        context = appContext.apiGatewayRegistrationContext,
         versions = Seq(
           APIVersion(
             version = "1.0",
@@ -116,7 +117,7 @@ class VatApiDefinition {
     )
 
   private def buildAPIStatus(version: String): APIStatus = {
-    AppContext.apiStatus(version) match {
+    appContext.apiStatus(version) match {
       case "ALPHA" => APIStatus.ALPHA
       case "BETA" => APIStatus.BETA
       case "STABLE" => APIStatus.STABLE
@@ -128,7 +129,7 @@ class VatApiDefinition {
   }
 
   private def buildWhiteListingAccess(): Option[Access] = {
-    val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
+    val featureSwitch = FeatureSwitch(appContext.featureSwitch)
     featureSwitch.isWhiteListingEnabled match {
       case true =>
         Some(Access("PRIVATE", featureSwitch.whiteListedApplicationIds))
@@ -137,4 +138,4 @@ class VatApiDefinition {
   }
 }
 
-object VatApiDefinition extends VatApiDefinition
+//object VatApiDefinition extends VatApiDefinition

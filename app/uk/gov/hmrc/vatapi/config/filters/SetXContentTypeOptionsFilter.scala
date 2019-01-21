@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.vatapi.auth
+package uk.gov.hmrc.vatapi.config.filters
 
+import akka.stream.Materializer
+import com.google.inject.Inject
+import play.api.mvc.{Filter, RequestHeader, Result}
 
-//object APIAuthorisedFunctions extends APIAuthorisedFunctions
-//
-//trait APIAuthorisedFunctions extends AuthorisedFunctions {
-//  override def authConnector: AuthConnector = MicroserviceAuthConnector
-//}
+import scala.concurrent.{ExecutionContext, Future}
 
-
+class SetXContentTypeOptionsFilter@Inject()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
+  val xContentTypeOptionsHeader = "X-Content-Type-Options"
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+    f(rh).map(_.withHeaders((xContentTypeOptionsHeader, "nosniff")))
+  }
+}

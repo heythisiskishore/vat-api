@@ -20,10 +20,10 @@ private object AppDependencies {
   import play.core.PlayVersion
 
   val reactiveMongoVersion = "6.2.0"
-  val microserviceBootstrapVersion = "8.7.0"
+  val microserviceBootstrapVersion = "4.7.0"
   val authClientVersion = "2.17.0-play-25"
   val domainVersion = "5.3.0"
-  val hmrcApiVersion = "2.1.0"  // updating this is a breaking change to the project.....
+  val hmrcApiVersion = "3.4.0-play-25"  // updating this is a breaking change to the project.....
   val jsonExtensionsVersion = "0.20.0"
   val jsonJodaVersion = "2.6.13"
   val catsCoreVersion = "1.5.0"
@@ -45,7 +45,7 @@ private object AppDependencies {
   val compile = Seq(
     "uk.gov.hmrc" %% "play-reactivemongo" % reactiveMongoVersion,
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-    "uk.gov.hmrc" %% "microservice-bootstrap" % microserviceBootstrapVersion,
+    "uk.gov.hmrc" %% "bootstrap-play-25" % microserviceBootstrapVersion,
     "uk.gov.hmrc" %% "auth-client" % authClientVersion,
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "uk.gov.hmrc" %% "play-hmrc-api" % hmrcApiVersion,

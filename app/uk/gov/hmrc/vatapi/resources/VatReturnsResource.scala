@@ -29,12 +29,12 @@ import uk.gov.hmrc.vatapi.services.AuthorisationService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object VatReturnsResource extends VatReturnsResource {
+class VatReturnsResource extends VatReturnsResource {
 
   override val connector: VatReturnsConnector = VatReturnsConnector
   override val orchestrator: VatReturnsOrchestrator = VatReturnsOrchestrator
   override val authService: AuthorisationService = AuthorisationService
-  override val appContext: AppContext = AppContext
+  override val appContext: AppContext = new AppContext
   override val auditService = AuditService
 }
 

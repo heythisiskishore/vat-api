@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.vatapi.auth
+package uk.gov.hmrc.vatapi.config
 
+import com.google.inject.AbstractModule
+import uk.gov.hmrc.vatapi.config.locator.ServiceLocatorRegistration
 
-//object APIAuthorisedFunctions extends APIAuthorisedFunctions
-//
-//trait APIAuthorisedFunctions extends AuthorisedFunctions {
-//  override def authConnector: AuthConnector = MicroserviceAuthConnector
-//}
+class Module extends AbstractModule {
 
-
+  override def configure(): Unit = {
+    bind(classOf[VatHttpRequestHandler]).asEagerSingleton()
+    bind(classOf[ServiceLocatorRegistration]).asEagerSingleton()
+    bind(classOf[AppContext]).to(classOf[AppContextImpl])
+  }
+}

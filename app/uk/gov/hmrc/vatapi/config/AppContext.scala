@@ -16,17 +16,44 @@
 
 package uk.gov.hmrc.vatapi.config
 
-import play.api.Configuration
+import com.google.inject.Inject
+import play.api.Mode.Mode
+import play.api.{Configuration, Environment}
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.vatapi.auth.VATAuthEnrolments
 
-object AppContext extends AppContext with ServicesConfig {
-  lazy val config: Configuration = current.configuration
+trait AppContext {
+  def desEnv: String
+  def desToken: String
+  def appName: String
+  def appUrl: String
+  def apiGatewayContext: Option[String]
+  def apiGatewayRegistrationContext: String
+  def apiGatewayLinkContext: String
+  def apiStatus(version: String): String
+
+  def serviceLocatorUrl: String
+  def desUrl: String
+  def nrsServiceUrl: String
+
+  def registrationEnabled: Boolean
+  def featureSwitch: Option[Configuration]
+  def auditEnabled: Boolean
+  def authEnabled: Boolean
+  def mtdDate: String
+  def xApiKey: String
+  def vatAuthEnrolments: VATAuthEnrolments
+
+  def vatHybridFeatureEnabled: Boolean
 }
 
-trait AppContext extends ServicesConfig {
-  val config: Configuration
+@Singleton
+class AppContextImpl @Inject ()(environment: Environment,
+                                config: Configuration) extends AppContext with ServicesConfig {
+
+  override protected def mode: Mode = environment.mode
+  override protected def runModeConfiguration: Configuration = config
 
   lazy val desEnv: String = config.getString(s"$env.microservice.services.des.env").getOrElse(throw new RuntimeException("desEnv is not configured"))
   lazy val desToken: String = config.getString(s"$env.microservice.services.des.token").getOrElse(throw new RuntimeException("desEnv is not configured"))
@@ -51,5 +78,5 @@ trait AppContext extends ServicesConfig {
     config.getString(s"$env.enrolments.identifier").getOrElse(throw new RuntimeException("identifier is not configured")),
     config.getString(s"$env.enrolments.auth-rule"))
 
-  lazy val vatHybridFeatureEnabled = config.getBoolean(s"$env.feature-switch.des.hybrid").getOrElse(false)
+  lazy val vatHybridFeatureEnabled: Boolean = config.getBoolean(s"$env.feature-switch.des.hybrid").getOrElse(false)
 }
